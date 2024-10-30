@@ -15,7 +15,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"runtime"
 	"strings"
 )
 
@@ -29,7 +28,6 @@ import (
 // filename that will be attached to the ASTs.
 //
 // TODO(adonovan): call this from go/loader.parseFiles when the tree thaws.
-//
 func ParseFile(fset *token.FileSet, ctxt *build.Context, displayPath func(string) string, dir string, file string, mode parser.Mode) (*ast.File, error) {
 	if !IsAbsPath(ctxt, file) {
 		file = JoinPath(ctxt, dir, file)
@@ -52,7 +50,6 @@ func ParseFile(fset *token.FileSet, ctxt *build.Context, displayPath func(string
 //
 // The '...Files []string' fields of the resulting build.Package are not
 // populated (build.FindOnly mode).
-//
 func ContainingPackage(ctxt *build.Context, dir, filename string) (*build.Package, error) {
 	if !IsAbsPath(ctxt, filename) {
 		filename = JoinPath(ctxt, dir, filename)
@@ -79,19 +76,11 @@ func ContainingPackage(ctxt *build.Context, dir, filename string) (*build.Packag
 	return nil, fmt.Errorf("can't find package containing %s", filename)
 }
 
-// dirHasPrefix tests whether the directory dir begins with prefix.
-func dirHasPrefix(dir, prefix string) bool {
-	if runtime.GOOS != "windows" {
-		return strings.HasPrefix(dir, prefix)
-	}
-	return len(dir) >= len(prefix) && strings.EqualFold(dir[:len(prefix)], prefix)
-}
-
 // -- Effective methods of file system interface -------------------------
 
 // (go/build.Context defines these as methods, but does not export them.)
 
-// hasSubdir calls ctxt.HasSubdir (if not nil) or else uses
+// HasSubdir calls ctxt.HasSubdir (if not nil) or else uses
 // the local file system to answer the question.
 func HasSubdir(ctxt *build.Context, root, dir string) (rel string, ok bool) {
 	if f := ctxt.HasSubdir; f != nil {
@@ -205,7 +194,6 @@ func SplitPathList(ctxt *build.Context, s string) []string {
 
 // sameFile returns true if x and y have the same basename and denote
 // the same file.
-//
 func sameFile(x, y string) bool {
 	if path.Clean(x) == path.Clean(y) {
 		return true
